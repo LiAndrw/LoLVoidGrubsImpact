@@ -1,11 +1,11 @@
 # League of Legends Esports Void Grubs Impact Analysis
-A project studying the impact of securing void grubs in League of Legends esports games, conducted at UC San Diego.
+A project studying the impact of securing void grubs in League of Legends Esports games, conducted at UC San Diego.
 
 Author: Andrew Li
 
 ## Introduction
 ### General Introduction
-League of Legends (LoL) is a multiplayer online battle arena (MOBA) game created and developed by Riot Games, where two teams of five players fight each other on a massive battlefield called Summoner’s Rift and try to destroy opposite side’s enemy base (AKA the Nexus) using various champions. Released in 2009, it has since become one of the most successful and influential online competitive games of all time, having tens of millions of monthly players and boasting a thriving competitive scene. 
+League of Legends (LoL) is a multiplayer online battle arena (MOBA) game created and developed by Riot Games, where two teams of five players fight each other on a massive battlefield called Summoner’s Rift and try to destroy opposite side’s enemy base (AKA the Nexus) using various champions. Released in 2009, it has since become one of the most successful and influential online competitive games of all time, having tens of millions of monthly players and boasting an incredible and thriving competitive scene. 
 
 In LoL, there are “epic” monsters, which are neutral monsters located between the friendly and enemy jungles and which provide powerful buffs to whichever team kills them. In 2024, Riot introduced a new epic monster: the **void grubs**. These spawned, and could only be killed, during the early stages of games, and up to a total of 6 can be killed in a game. When killed, they give gold and experience, and more importantly, allow the team that killed them to deal extra damage over time (DOT) to enemy structures. Killing more than four void grubs also spawns voidmites whenever friendly teammates hit enemy structures, and these voidmites also deal damage to structures. The Nexus, along with the turrets and inhibitors that defend them, are all structures, and thus void grubs became an important objective to secure for teams.
 
@@ -48,6 +48,9 @@ The data set we end up with contains 16012 rows and 12 columns, 11 of which hold
 | LOLTMNT99_132665 | Blue  |        1 |          31 |           20 |       2.0 |      1.0 |          4.0 |      8.0 | 1.0          |           251 | 72355       |
 | LOLTMNT99_132665 | Red   |        0 |          20 |           31 |       3.0 |      1.0 |          2.0 |      8.0 | 1.0          |           251 | 66965       |
 | LOLTMNT99_132755 | Blue  |        1 |          24 |            8 |       2.0 |      1.0 |          2.0 |      9.0 | 1.0          |           261 | 68226       |
+
+### Univariate Analysis
+In this exploratory data analysis, univariate analysis was performed to examine the distribution of single variables. 
 
 
 

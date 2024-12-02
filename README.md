@@ -35,7 +35,7 @@ The original dataframe is comprised of 116016 rows and 161 columns. Each row rep
 ### Data Cleaning
 To prepare the dataset for analysis, it must first be cleaned, and the first step was to only include games with a `'participantid'`of 100 or 200, as those are used to denote the entries of teams instead of individual players, and only those entries include all of the relevant data needed (entries for players do not include key information such as total void grubs taken, total towers taken, total team gold earned, etc.).
 
-It was also necessary to include only the relevant columns: `'gameid'`, `'side'`,`'result'`, `'teamkills'`, `'teamdeaths'`, `'dragons'`, `'barons'`, `'void_grubs'`, `'towers'`, `'inhibitors'`, `'visionscore'`, and `'totalgold'`. All of these rows will be needed for future use and analysis. The dataset also includes a few games from 2023, and so it was necessary to remove those rows as those games weren't played during the 2024 season that this project is focused on.
+It was also necessary to include only the relevant columns: `'gameid'`, `'side'`,`'result'`, `'teamkills'`, `'teamdeaths'`, `'dragons'`, `'barons'`, `'void_grubs'`, `'towers'`, `'inhibitors'`, `'visionscore'`, and `'totalgold'`. All of these rows will be needed for future use and analysis. The dataset also includes a few games from 2023, and so it was necessary to remove those rows as those games weren't played during the 2024 season that void grubs were introduced in.
 
 It also turns out that the data set doesn't include `'void_grubs'` information for a few regions, due to the dataset obtaining the data for these regions by scraping certain websites that didn't incude the information regarding void grub secures. It was thus necessary to remove the rows where `'void_grubs'` has NaN value.
 
@@ -48,6 +48,20 @@ The data set we end up with contains 16012 rows and 12 columns, 11 of which hold
 | LOLTMNT99_132665 | Blue  |        1 |          31 |           20 |       2.0 |      1.0 |          4.0 |      8.0 | 1.0          |           251 | 72355       |
 | LOLTMNT99_132665 | Red   |        0 |          20 |           31 |       3.0 |      1.0 |          2.0 |      8.0 | 1.0          |           251 | 66965       |
 | LOLTMNT99_132755 | Blue  |        1 |          24 |            8 |       2.0 |      1.0 |          2.0 |      9.0 | 1.0          |           261 | 68226       |
+
+A second dataset, which was named grouped, was also made for use in further analysis. This dataset was created from smaller_df by first grouping on  `'void_grubs'` and creating two new columns: `'result_sum'`, which is the used to count the total number of wins teams earned after getting a specific number of void grubs, and `'count'`, the count of games where the specific number of void grubs was obtained by a team.
+
+Two more columns were added: `'winrate'`, which was created by dividing the `'result_sum'` column by the `'count'` column and which shows the ratio of games won to total games played for each number of void grubs secured, and `'percent  of games'`, which was created by dividing the `'count'` column by its sum and which shows the proportion of games each `'void_grubs'` value represents out of the total number of games. 
+
+After resetting the index, this is the head of the grouped dataframe:
+
+| void_grubs     | result_sum  |   count |   winrate |   percent of games |
+|:---------------|:------------|--------:|----------:|-------------------:|
+| 0.0            | 1530        |    3757 |      0.41 |               0.23 |
+| 1.0            | 723         |    1642 |      0.44 |               0.10 |
+| 2.0            | 771         |    1656 |      0.47 |               0.10 |
+| 3.0            | 1858        |    3717 |      0.50 |               0.23 |
+| 4.0            | 679         |    1258 |      0.54 |               0.08 |
 
 ### Univariate Analysis
 In this exploratory data analysis, univariate analysis was performed to examine the distribution of single variables. 

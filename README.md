@@ -19,6 +19,7 @@ The original dataframe is comprised of 116016 rows and 161 columns. Each row rep
 |---                |---        |
 |`'participantid'`                |Identifier of a participant representing their side, role, and whether they're a team or a player|
 |`'gameid'`                |Unique identifier for each individual game played|
+|`'league'`                |The league the individual game was played in|
 |`'side'`                |The side of the map the participant played on (Red or Blue side)|
 |`'result'`                |The result the participant recieved during the game|
 |`'teamkills'`                |The number of enemy champion takedowns a participant obtained during a game|
@@ -35,31 +36,19 @@ The original dataframe is comprised of 116016 rows and 161 columns. Each row rep
 ### Data Cleaning
 To prepare the dataset for analysis, it must first be cleaned, and the first step was to only include games with a `'participantid'`of 100 or 200, as those are used to denote the entries of teams instead of individual players, and only those entries include all of the relevant data needed (entries for players do not include key information such as total void grubs taken, total towers taken, total team gold earned, etc.).
 
-It was also necessary to include only the relevant columns: `'gameid'`, `'side'`,`'result'`, `'teamkills'`, `'teamdeaths'`, `'dragons'`, `'barons'`, `'void_grubs'`, `'towers'`, `'inhibitors'`, `'visionscore'`, and `'totalgold'`. All of these rows will be needed for future use and analysis. The dataset also includes a few games from 2023, and so it was necessary to remove those rows as those games weren't played during the 2024 season that void grubs were introduced in.
+It was also necessary to include only the relevant columns: `'gameid'`, `'league'`, `'side'`,`'result'`, `'teamkills'`, `'teamdeaths'`, `'dragons'`, `'barons'`, `'void_grubs'`, `'towers'`, `'inhibitors'`, `'visionscore'`, and `'totalgold'`. All of these rows will be needed for future use and analysis. The dataset also includes a few games from 2023, and so it was necessary to remove those rows as those games weren't played during the 2024 season that void grubs were introduced in.
 
-The data set we end up with contains 18798 rows and 12 columns, 11 of which hold information regarding the overall performance of a team in a game, and 1 of which (`'gameid'`) containing information on what specific game the information was from. Below is the head of the smaller_df dataframe:
+The data set we end up with contains 18798 rows and 13 columns, 11 of which hold information regarding the overall performance of a team in a game, and 2 of which (`'gameid'` and `'league'`) containing information on what specific game the information was from and what league the game was played in. Below is the head of the smaller_df dataframe:
 
-| gameid           | side  |   result |   teamkills |   teamdeaths |   dragons |   barons |   void_grubs |   towers | inhibitors   |   visionscore | totalgold   |
-|:-----------------|:------|---------:|------------:|-------------:|----------:|---------:|-------------:|---------:|:-------------|--------------:|:------------|
-| LOLTMNT99_132542 | Blue  |        1 |          20 |            7 |       2.0 |      1.0 |          0.0 |      9.0 | 1.0          |           186 | 52523       |
-| LOLTMNT99_132542 | Red   |        0 |           7 |           20 |       1.0 |      0.0 |          6.0 |      1.0 | 0.0          |           141 | 39782       |
-| LOLTMNT99_132665 | Blue  |        1 |          31 |           20 |       2.0 |      1.0 |          4.0 |      8.0 | 1.0          |           251 | 72355       |
-| LOLTMNT99_132665 | Red   |        0 |          20 |           31 |       3.0 |      1.0 |          2.0 |      8.0 | 1.0          |           251 | 66965       |
-| LOLTMNT99_132755 | Blue  |        1 |          24 |            8 |       2.0 |      1.0 |          2.0 |      9.0 | 1.0          |           261 | 68226       |
+| gameid           | side  | league  |   result |   teamkills |   teamdeaths |   dragons |   barons |   void_grubs |   towers | inhibitors   |   visionscore | totalgold   |
+|:-----------------|:------|:--------|---------:|------------:|-------------:|----------:|---------:|-------------:|---------:|:-------------|--------------:|:------------|
+| LOLTMNT99_132542 | Blue  | TSC     |        1 |          20 |            7 |       2.0 |      1.0 |          0.0 |      9.0 | 1.0          |           186 | 52523       |
+| LOLTMNT99_132542 | Red   | TSC     |        0 |           7 |           20 |       1.0 |      0.0 |          6.0 |      1.0 | 0.0          |           141 | 39782       |
+| LOLTMNT99_132665 | Blue  | TSC     |        1 |          31 |           20 |       2.0 |      1.0 |          4.0 |      8.0 | 1.0          |           251 | 72355       |
+| LOLTMNT99_132665 | Red   | TSC     |        0 |          20 |           31 |       3.0 |      1.0 |          2.0 |      8.0 | 1.0          |           251 | 66965       |
+| LOLTMNT99_132755 | Blue  | TSC     |        1 |          24 |            8 |       2.0 |      1.0 |          2.0 |      9.0 | 1.0          |           261 | 68226       |
 
-A second dataframe, which was named grouped, was also made for use in further analysis and to find inteesting aggregates. This dataset was created from smaller_df by first grouping on `'void_grubs'` and creating several new columns: `'result_sum'`, the total number of wins teams earned after getting a specific number of void grubs, `'count'`, the count of games where the specific number of void grubs was obtained by a team, and `'avg_towers'`, the average number of towers taken in a game by teams that had secured a specific number of void grubs.
-
-Two more columns were added to the new dataframe: `'winrate'`, which was created by dividing the `'result_sum'` column by the `'count'` column and which shows the ratio of games won to total games played for each number of void grubs secured, and `'percent of games'`, which was created by dividing the `'count'` column by its sum and which shows the proportion of games each `'void_grubs'` value represents out of the total number of games. 
-
-After resetting the index, this is the head of the grouped dataframe:
-
-| void_grubs     | result_sum  |   count | avg_towers|    winrate |   percent of games |
-|:---------------|:------------|--------:|----------:|-----------:|-------------------:|
-| 0.0            | 1530        |    3757 |      5.14 |       0.41 |               0.23 |
-| 1.0            | 723         |    1642 |      5.48 |       0.41 |               0.10 |
-| 2.0            | 771         |    1656 |      5.85 |       0.41 |               0.10 |
-| 3.0            | 1858        |    3717 |      6.21 |       0.41 |               0.23 |
-| 4.0            | 679         |    1258 |      6.51 |       0.41 |               0.08 |
+**NOTE** that this cleaned dataframe will need to be further adjusted and modified for other specific parts of the project.
 
 ### Univariate Analysis
 In this exploratory data analysis, univariate analysis was performed to examine the distribution of `'totalgold'`, the total amount of gold earned by a team in a game. This analysis used the smaller_df dataframe.
@@ -98,17 +87,25 @@ Bivariate analysis was performed to find the correlation between `'void_grubs'` 
 The bar graph shows a distinct positive correlation between void grubs taken and win rate. The win rate of teams increases with the number of void grubs taken they take, indicating that taking more void grubs increases a team's chances of winning the game. 
 
 ### Interesting Aggregates
-As mentioned earlier, the grouped dataframe was created partially to find interesting aggregates and other patterns in the data. 
+A second dataframe, which was named grouped, was also made to find interesting aggregates. This dataset was created from smaller_df by first grouping on `'void_grubs'` and creating several new columns: `'result_sum'`, the total number of wins teams earned after getting a specific number of void grubs, `'count'`, the count of games where the specific number of void grubs was obtained by a team, `'avg_towers'`, the average number of towers taken in a game by teams that had secured a specific number of void grubs, `'avg_totalgold'`, the average amount of total gold earned by teams that had secured a specific number of void grubs, and `'avg_visionscore'`, the average amount of vision score earned by teams that had secured a specific number of void grubs.
 
 `'result_sum'` was calculated by applying a sum aggregation function on `'result'` from smaller_df.
 `'count'` was calculated by applying a size aggregation function on `'void_grubs'` from smaller_df.
-`'avg_towers'` was calculated by applying a mean aggregation function on `'towers'` from smaller_df.
+`'avg_towers'`, `'avg_totalgold'`, and `'avg_visionscore'` was calculated by applying a mean aggregation function on `'towers'`, `'totalgold'`, and `'visionscore'` respectively, from smaller_df.
 
-Below is the grouped dataframe in its entirety:
+Two more columns were added to the new dataframe: `'winrate'`, which was created by dividing the `'result_sum'` column by the `'count'` column and which shows the ratio of games won to total games played for each number of void grubs secured, and `'percent of games'`, which was created by dividing the `'count'` column by its sum and which shows the proportion of games each `'void_grubs'` value represents out of the total number of games.
+
+This is what the grouped dataframe looks like:
 
 <iframe
-  src="assets/groupedagg.html"
+  src="assets/groupedtable.html"
   width="800"
   height="300"
   frameborder="0"
 ></iframe>
+
+What's interesting to see is that not only does winrate increase with number of void grubs taken by teams, but the number of towers taken also noticeably increases with the number of void grubs taken by teams. Even more interesting is that taking void grubs doesn't seem to have much of a noticeable impact on total gold earned after 3 void grubs, and it seems to have almost no impact on average vision score. While the data still heavily implies that taking void grubs significantly impacts the flow of the game and allows teams to get more towers and win games more often, it also shows that taking void grubs may not necessarily affect other features as much.
+
+## Assessment of Missingness
+### NMAR Analysis
+I believe that the the missingness of many values in the `'xpat25'` column are not missing at random (NMAR).

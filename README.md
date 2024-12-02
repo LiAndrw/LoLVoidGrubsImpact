@@ -37,9 +37,7 @@ To prepare the dataset for analysis, it must first be cleaned, and the first ste
 
 It was also necessary to include only the relevant columns: `'gameid'`, `'side'`,`'result'`, `'teamkills'`, `'teamdeaths'`, `'dragons'`, `'barons'`, `'void_grubs'`, `'towers'`, `'inhibitors'`, `'visionscore'`, and `'totalgold'`. All of these rows will be needed for future use and analysis. The dataset also includes a few games from 2023, and so it was necessary to remove those rows as those games weren't played during the 2024 season that void grubs were introduced in.
 
-It also turns out that the data set doesn't include `'void_grubs'` information for a few regions, due to the dataset obtaining the data for these regions by scraping certain websites that didn't incude the information regarding void grub secures. It was thus necessary to remove the rows where `'void_grubs'` has NaN value.
-
-The data set we end up with contains 16012 rows and 12 columns, 11 of which hold information regarding the overall performance of a team in a game, and 1 of which (`'gameid'`) containing information on what specific game the information was from. Below is the head of the smaller_df dataframe:
+The data set we end up with contains 18798 rows and 12 columns, 11 of which hold information regarding the overall performance of a team in a game, and 1 of which (`'gameid'`) containing information on what specific game the information was from. Below is the head of the smaller_df dataframe:
 
 | gameid           | side  |   result |   teamkills |   teamdeaths |   dragons |   barons |   void_grubs |   towers | inhibitors   |   visionscore | totalgold   |
 |:-----------------|:------|---------:|------------:|-------------:|----------:|---------:|-------------:|---------:|:-------------|--------------:|:------------|
@@ -49,22 +47,68 @@ The data set we end up with contains 16012 rows and 12 columns, 11 of which hold
 | LOLTMNT99_132665 | Red   |        0 |          20 |           31 |       3.0 |      1.0 |          2.0 |      8.0 | 1.0          |           251 | 66965       |
 | LOLTMNT99_132755 | Blue  |        1 |          24 |            8 |       2.0 |      1.0 |          2.0 |      9.0 | 1.0          |           261 | 68226       |
 
-A second dataset, which was named grouped, was also made for use in further analysis. This dataset was created from smaller_df by first grouping on  `'void_grubs'` and creating two new columns: `'result_sum'`, which is the used to count the total number of wins teams earned after getting a specific number of void grubs, and `'count'`, the count of games where the specific number of void grubs was obtained by a team.
+A second dataframe, which was named grouped, was also made for use in further analysis and to find inteesting aggregates. This dataset was created from smaller_df by first grouping on `'void_grubs'` and creating several new columns: `'result_sum'`, the total number of wins teams earned after getting a specific number of void grubs, `'count'`, the count of games where the specific number of void grubs was obtained by a team, and `'avg_towers'`, the average number of towers taken in a game by teams that had secured a specific number of void grubs.
 
-Two more columns were added: `'winrate'`, which was created by dividing the `'result_sum'` column by the `'count'` column and which shows the ratio of games won to total games played for each number of void grubs secured, and `'percent  of games'`, which was created by dividing the `'count'` column by its sum and which shows the proportion of games each `'void_grubs'` value represents out of the total number of games. 
+Two more columns were added to the new dataframe: `'winrate'`, which was created by dividing the `'result_sum'` column by the `'count'` column and which shows the ratio of games won to total games played for each number of void grubs secured, and `'percent of games'`, which was created by dividing the `'count'` column by its sum and which shows the proportion of games each `'void_grubs'` value represents out of the total number of games. 
 
 After resetting the index, this is the head of the grouped dataframe:
 
-| void_grubs     | result_sum  |   count |   winrate |   percent of games |
-|:---------------|:------------|--------:|----------:|-------------------:|
-| 0.0            | 1530        |    3757 |      0.41 |               0.23 |
-| 1.0            | 723         |    1642 |      0.44 |               0.10 |
-| 2.0            | 771         |    1656 |      0.47 |               0.10 |
-| 3.0            | 1858        |    3717 |      0.50 |               0.23 |
-| 4.0            | 679         |    1258 |      0.54 |               0.08 |
+| void_grubs     | result_sum  |   count | avg_towers|    winrate |   percent of games |
+|:---------------|:------------|--------:|----------:|-----------:|-------------------:|
+| 0.0            | 1530        |    3757 |      5.14 |       0.41 |               0.23 |
+| 1.0            | 723         |    1642 |      5.48 |       0.41 |               0.10 |
+| 2.0            | 771         |    1656 |      5.85 |       0.41 |               0.10 |
+| 3.0            | 1858        |    3717 |      6.21 |       0.41 |               0.23 |
+| 4.0            | 679         |    1258 |      6.51 |       0.41 |               0.08 |
 
 ### Univariate Analysis
-In this exploratory data analysis, univariate analysis was performed to examine the distribution of single variables. 
+In this exploratory data analysis, univariate analysis was performed to examine the distribution of `'totalgold'`, the total amount of gold earned by a team in a game. This analysis used the smaller_df dataframe.
 
 
+<iframe
+  src="assets/golddist.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>. 
 
+The histogram shows that the distribution of `'totalgold'` is nearly normal with almost no skew. This indicates that, most of the time, teams end games with `'totalgold'` only a few standard deviations away from the mean `'totalgold'` value, and it is rare for games to end with one team having an extremely low or high `'totalgold'` value.
+
+Univariate analysis was also performed to examine the distribution of `'void_grubs'`, the total number of void grubs taken by a team in a game. This analysis used the grouped dataframe.
+
+<iframe
+  src="assets/voidgrubsdist.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>. 
+
+The pie chart shows that `'void_grubs'` has a trimodal distribution, with the slices of 0, 3, and 6 void grubs being much larger than the ones of 1, 2, 4, and 5 void grubs. This is probably due to the fact that void grubs spawn twice in groups of 3, meaning that, most of the time, teams will try to secure all void grubs in a group, leading to the grouping of void grub secures at multiples of 3. 
+
+### Bivariate Analysis
+Bivariate analysis was performed to find the correlation between `'void_grubs'` and `'result'`. A bar graph was created that shows the ratio of wins to the total number of games (win rate) for each number of void grubs taken by a team. The grouped dataframe was used for this analysis.
+
+<iframe
+  src="assets/grubswinrate.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>. 
+
+The bar graph shows a distinct positive correlation between void grubs taken and win rate. The win rate of teams increases with the number of void grubs taken they take, indicating that taking more void grubs increases a team's chances of winning the game. 
+
+### Interesting Aggregates
+As mentioned earlier, the grouped dataframe was created partially to find interesting aggregates and other patterns in the data. 
+
+`'result_sum'` was calculated by applying a sum aggregation function on `'result'` from smaller_df.
+`'count'` was calculated by applying a size aggregation function on `'void_grubs'` from smaller_df.
+`'avg_towers'` was calculated by applying a mean aggregation function on `'towers'` from smaller_df.
+
+Below is the grouped dataframe in its entirety:
+
+<iframe
+  src="assets/groupedagg.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>

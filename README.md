@@ -68,7 +68,7 @@ In this exploratory data analysis, univariate analysis was performed to examine 
 <iframe
   src="assets/golddist.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>. 
 
@@ -79,7 +79,7 @@ Univariate analysis was also performed to examine the distribution of `'void_gru
 <iframe
   src="assets/voidgrubsdist.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>. 
 
@@ -91,7 +91,7 @@ Bivariate analysis was performed to find the correlation between `'void_grubs'` 
 <iframe
   src="assets/grubswinrate.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>. 
 
@@ -109,6 +109,6 @@ Below is the grouped dataframe in its entirety:
 <iframe
   src="assets/groupedagg.html"
   width="800"
-  height="600"
+  height="300"
   frameborder="0"
 ></iframe>

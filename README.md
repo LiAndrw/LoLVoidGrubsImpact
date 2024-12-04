@@ -17,11 +17,11 @@ The original dataframe is comprised of 116016 rows and 161 columns. Each row rep
 
 |Column                |Description|
 |---                |---        |
-|`'participantid'`                |Identifier of a participant representing their side, role, and whether they're a team or a player|
+|`'participantid'`                |Identifier of a participant representing their side, role, and whether they're a team or a player (1-10 denote players and their specific role, 100 and 200 denote a team)|
 |`'gameid'`                |Unique identifier for each individual game played|
 |`'league'`                |The league the individual game was played in|
 |`'side'`                |The side of the map the participant played on (Red or Blue side)|
-|`'result'`                |The result the participant recieved during the game|
+|`'result'`                |The result the participant recieved during the game (1 for a win, 0 for a loss)|
 |`'teamkills'`                |The number of enemy champion takedowns a participant obtained during a game|
 |`'teamdeaths'`                |The number of champion deaths a participant obtained during a game|
 |`'dragons'`                |The number of elemental drakes and Elder Dragons a participant secured during a game|
@@ -38,7 +38,7 @@ To prepare the dataset for analysis, it must first be cleaned, and the first ste
 
 It was also necessary to include only the relevant columns: `'gameid'`, `'league'`, `'side'`,`'result'`, `'teamkills'`, `'teamdeaths'`, `'dragons'`, `'barons'`, `'void_grubs'`, `'towers'`, `'inhibitors'`, `'visionscore'`, and `'totalgold'`. All of these rows will be needed for future use and analysis. The dataset also includes a few games from 2023, and so it was necessary to remove those rows as those games weren't played during the 2024 season that void grubs were introduced in.
 
-The data set we end up with contains 18798 rows and 13 columns, 11 of which hold information regarding the overall performance of a team in a game, and 2 of which (`'gameid'` and `'league'`) containing information on what specific game the information was from and what league the game was played in. Below is the head of the smaller_df dataframe:
+The data set we end up with contains 18798 rows and 13 columns, 10 of which hold quantitative information regarding the overall performance of a team in a game, 2 of which (`'gameid'` and `'league'`) containing categorical information on what specific game the information was from and what league the game was played in, and `'side'` containing categorical information on what side of the map each team played on. Below is the head of the smaller_df dataframe:
 
 | gameid           | side  | league  |   result |   teamkills |   teamdeaths |   dragons |   barons |   void_grubs |   towers | inhibitors   |   visionscore | totalgold   |
 |:-----------------|:------|:--------|---------:|------------:|-------------:|----------:|---------:|-------------:|---------:|:-------------|--------------:|:------------|
@@ -113,7 +113,7 @@ I believe that the the missingness of many values in the `'xpat25'` column are n
 I believe that those instances of missing data are NMAR because some games don't last until 25 minutes, with one team winning before then. This means that the missingness of these data values depends on themselves. To obtain data that could explain the `'xpat25'` missingness and make it missing at random (MAR) instead, an additional column that tracks whether a game goes to 25 minutes (lets call this hypothetical column `'lasted_to_25'`) could be made which returns whether or not a game lasted to 25 minutes. 
 
 ### Missingness Dependency
-This section investigates the missingness of `'void_grubs'` in relation to other columns, specifically to see if its missingness depends on them. The first column I used was `'league'`. The second column I used was `'side'`. The significance level used for both permutation tests was 0.05. Both tests used total variation distance (TVD) as the test statistic.
+This section investigates the missingness of `'void_grubs'` in relation to other columns, specifically to see if its missingness depends on them. The first column I used was `'league'`. The second column I used was `'side'`. The significance level used for both permutation tests was 0.05. Both tests used total variation distance (TVD) as the test statistic. Both tests used 1000 shuffles to collect 1000 samples. 
 
 The first permutation test was performed on `'void_grubs'` and `'league'`.
 
@@ -128,7 +128,7 @@ Below is the observed distribution of `'league'` in relation to when `'void_grub
 <iframe
   src="assets/leaguevgmissing.html"
   width="800"
-  height="2000"
+  height="1200"
   frameborder="0"
 ></iframe>
 
@@ -141,5 +141,33 @@ After performing permutation testing, the **observed TVD** was found to be 0.990
   frameborder="0"
 ></iframe>
 
-At this value, I reject the null hypothesis, as the p-value was found to be less than the significance level. The missingness of `'void_grubs'` in a game does depend on the `'league'` the game was played in. The distribution of `'league'` is **NOT** the same regardless of whether or not `'void_grubs'` is missing, indicating that various regions may have vastly different ratios of non-missing `'void_grubs'`data to missing `'void_grubs'` data compared to others.
+At this value, I reject the null hypothesis, as the p-value was found to be less than the significance level. The distribution of `'league'` is **NOT** the same regardless of whether or not `'void_grubs'` is missing, indicating that various regions may have vastly different ratios of non-missing `'void_grubs'`data to missing `'void_grubs'` data compared to others.
 
+The second permutation test was performed on `'void_grubs'` and `'side'`.
+
+**Null Hypothesis:** The distribution of `'side'` is the same regardless of whether or not `'void_grubs'` is missing.
+
+**Alternative Hypothesis:** The distribution of `'side'` is **NOT** the same regardless of whether or not `'void_grubs'` is missing.
+
+**Test Statistic**  The difference in league distributions between `'void_grubs'` missing (NA) and not missing (non-NA).
+
+Below is the observed distribution of `'side'` in relation to when `'void_grubs'` is missing and not missing.
+
+
+<iframe
+  src="assets/sidevgmissing.html"
+  width="800"
+  height="150"
+  frameborder="0"
+></iframe>
+
+After performing permutation testing, the **observed TVD** was found to be 0, and the **p-value** was found to be 1. The plot below shows the empirical distribution of the TVD's, along with the observed TVD. 
+
+<iframe
+  src="assets/vgmissingside.html"
+  width="800"
+  height="450"
+  frameborder="0"
+></iframe>
+
+At this value, I fail to reject the null hypothesis, as the p-value was found to be greater than the significance level. The distribution of `'side'` is the same regardless of whether or not `'void_grubs'` is missing, indicating that the `'side'` a team plays on in a game does not affect if `'void_grubs'` gets recorded or not.

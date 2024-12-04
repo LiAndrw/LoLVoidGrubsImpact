@@ -51,36 +51,36 @@ The data set we end up with contains 18798 rows and 13 columns, 11 of which hold
 **NOTE** that this cleaned dataframe will need to be further adjusted and modified for other specific parts of the project.
 
 ### Univariate Analysis
-In this exploratory data analysis, univariate analysis was performed to examine the distribution of `'totalgold'`, the total amount of gold earned by a team in a game. This analysis used the smaller_df dataframe.
+In this exploratory data analysis, univariate analysis was performed to examine the distribution of `'totalgold'`, the total amount of gold earned by a team in a game.
 
 
 <iframe
   src="assets/golddist.html"
   width="800"
-  height="400"
+  height="450"
   frameborder="0"
 ></iframe>. 
 
 The histogram shows that the distribution of `'totalgold'` is nearly normal with almost no skew. This indicates that, most of the time, teams end games with `'totalgold'` only a few standard deviations away from the mean `'totalgold'` value, and it is rare for games to end with one team having an extremely low or high `'totalgold'` value.
 
-Univariate analysis was also performed to examine the distribution of `'void_grubs'`, the total number of void grubs taken by a team in a game. This analysis used the grouped dataframe.
+Univariate analysis was also performed to examine the distribution of `'void_grubs'`, the total number of void grubs taken by a team in a game. 
 
 <iframe
   src="assets/voidgrubsdist.html"
   width="800"
-  height="400"
+  height="450"
   frameborder="0"
 ></iframe>. 
 
-The pie chart shows that `'void_grubs'` has a trimodal distribution, with the slices of 0, 3, and 6 void grubs being much larger than the ones of 1, 2, 4, and 5 void grubs. This is probably due to the fact that void grubs spawn twice in groups of 3, meaning that, most of the time, teams will try to secure all void grubs in a group, leading to the grouping of void grub secures at multiples of 3. 
+The histogram shows that `'void_grubs'` has a trimodal distribution, with the bars of 0, 3, and 6 void grubs being much longer than the ones of 1, 2, 4, and 5 void grubs. This is probably due to the fact that void grubs spawn twice in groups of 3, meaning that, most of the time, teams will try to secure all void grubs in a group, leading to the grouping of void grub secures at multiples of 3. 
 
 ### Bivariate Analysis
-Bivariate analysis was performed to find the correlation between `'void_grubs'` and `'result'`. A bar graph was created that shows the ratio of wins to the total number of games (win rate) for each number of void grubs taken by a team. The grouped dataframe was used for this analysis.
+Bivariate analysis was performed to find the correlation between `'void_grubs'` and `'result'`. A bar graph was created that shows the ratio of wins to the total number of games (win rate) for each number of void grubs taken by a team. 
 
 <iframe
   src="assets/grubswinrate.html"
   width="800"
-  height="400"
+  height="450"
   frameborder="0"
 ></iframe>. 
 
@@ -95,12 +95,12 @@ A second dataframe, which was named grouped, was also made to find interesting a
 
 Two more columns were added to the new dataframe: `'winrate'`, which was created by dividing the `'result_sum'` column by the `'count'` column and which shows the ratio of games won to total games played for each number of void grubs secured, and `'percent of games'`, which was created by dividing the `'count'` column by its sum and which shows the proportion of games each `'void_grubs'` value represents out of the total number of games.
 
-This is what the grouped dataframe looks like:
+This is what the grouped pivot table looks like:
 
 <iframe
-  src="assets/groupedtable.html"
+  src="assets/groupedaggs.html"
   width="800"
-  height="300"
+  height="250"
   frameborder="0"
 ></iframe>
 
@@ -108,4 +108,38 @@ What's interesting to see is that not only does winrate increase with number of 
 
 ## Assessment of Missingness
 ### NMAR Analysis
-I believe that the the missingness of many values in the `'xpat25'` column are not missing at random (NMAR).
+I believe that the the missingness of many values in the `'xpat25'` column are not missing at random (NMAR). `'xpat25'` records the amount of experience (earned mostly by killing minions, monsters and enemy champions, used to level up your champion in order to increase their power and abilities) a participant has earned by 25 minutes. While several regions don't have `'xpat25'`or other features regarding statistics at specific times simply because the websites for those regions that the dataset obtained the information from didn't contain those statistics, there are regions that record `'xpat25'` data yet still have games where it is missing. 
+
+I believe that those instances of missing data are NMAR because some games don't last until 25 minutes, with one team winning before then. This means that the missingness of these data values depends on themselves. To obtain data that could explain the `'xpat25'` missingness and make it missing at random (MAR) instead, an additional column that tracks whether a game goes to 25 minutes (lets call this hypothetical column `'lasted_to_25'`) could be made which returns whether or not a game lasted to 25 minutes. 
+
+### Missingness Dependency
+This section investigates the missingness of `'void_grubs'` in relation to other columns, specifically to see if its missingness depends on them. The first column I used was `'league'`. The second column I used was `'side'`. The significance level used for both permutation tests was 0.05. Both tests used total variation distance (TVD) as the test statistic.
+
+The first permutation test was performed on `'void_grubs'` and `'league'`.
+
+**Null Hypothesis:** The distribution of `'league'` is the same regardless of whether or not `'void_grubs'` is missing.
+
+**Alternative Hypothesis:** The distribution of `'league'` is **NOT** the same regardless of whether or not `'void_grubs'` is missing.
+
+**Test Statistic**  The difference in league distributions between `'void_grubs'` missing (NA) and not missing (non-NA).
+
+Below is the observed distribution of `'league'` in relation to when `'void_grubs'` is missing and not missing.
+
+<iframe
+  src="assets/leaguevgmissing.html"
+  width="800"
+  height="2000"
+  frameborder="0"
+></iframe>
+
+After performing permutation testing, the **observed TVD** was found to be 0.9905316824471959, and the **p-value** was found to be 0. The plot below shows the empirical distribution of the TVD's, along with the observed TVD. 
+
+<iframe
+  src="assets/vgmissingleague.html"
+  width="800"
+  height="450"
+  frameborder="0"
+></iframe>
+
+At this value, I reject the null hypothesis, as the p-value was found to be less than the significance level. The missingness of `'void_grubs'` in a game does depend on the `'league'` the game was played in. The distribution of `'league'` is **NOT** the same regardless of whether or not `'void_grubs'` is missing, indicating that various regions may have vastly different ratios of non-missing `'void_grubs'`data to missing `'void_grubs'` data compared to others.
+

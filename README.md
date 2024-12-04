@@ -128,7 +128,7 @@ Below is the observed distribution of `'league'` in relation to when `'void_grub
 <iframe
   src="assets/leaguevgmissing.html"
   width="800"
-  height="1200"
+  height="1300"
   frameborder="0"
 ></iframe>
 

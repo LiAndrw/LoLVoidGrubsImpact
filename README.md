@@ -267,7 +267,7 @@ Below is a graph showing the distribution of the test statistics:
 <iframe
   src="assets/modelfairness.html"
   width="800"
-  height="250"
+  height="450"
   frameborder="0"
 ></iframe>
 

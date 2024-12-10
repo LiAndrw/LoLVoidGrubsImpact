@@ -13,7 +13,7 @@ In LoL, there are “epic” monsters, which are neutral monsters located betwee
 The central question this project is interested in answering is the following: **How does securing the void grubs affect the game course and statistics of the team that secures them?** This project will use data analysis techniques to quantify and discover the relationship that securing void grubs has with various features, such as structures destroyed, gold differentials, kill differences and game outcomes. We will then use these statistics to create a prediction model that will predict the outcome of a game given said statistics. This model could be used to better understand win conditions in League games, helping teams to devise strategies to play at a higher level.
 
 ### Columns
-The original dataframe is comprised of 116016 rows and 161 columns. Each row represents the game data of a participant, which can either a player on a team or an entire team, and each column stores an important game statistic or metric. For this project, 13 columns will be needed:
+The original dataframe is comprised of 116016 rows and 161 columns. Each row represents the game data of a participant, which can either a player on a team or an entire team, and each column stores an important game statistic or metric. For this project, 14 columns will be needed:
 
 |Column                |Description|
 |---                |---        |
@@ -86,7 +86,7 @@ Bivariate analysis was performed to find the correlation between `'void_grubs'` 
   frameborder="0"
 ></iframe>. 
 
-The bar graph shows a distinct positive correlation between void grubs taken and win rate. The win rate of teams increases with the number of void grubs taken they take, indicating that taking more void grubs increases a team's chances of winning the game. 
+The bar graph shows a distinct positive correlation between void grubs taken and win rate. The win rate of teams increases with the number of void grubs taken they take, indicating that taking more void grubs may possibly increase a team's chances of winning the game. 
 
 ### Interesting Aggregates
 A second dataframe, which was named grouped, was also made to find interesting aggregates. This dataset was created from smaller_df by first grouping on `'void_grubs'` and creating several new columns: `'result_sum'`, the total number of wins teams earned after getting a specific number of void grubs, `'count'`, the count of games where the specific number of void grubs was obtained by a team, `'avg_towers'`, the average number of towers taken in a game by teams that had secured a specific number of void grubs, `'avg_totalgold'`, the average amount of total gold earned by teams that had secured a specific number of void grubs, and `'avg_visionscore'`, the average amount of vision score earned by teams that had secured a specific number of void grubs.
@@ -273,7 +273,9 @@ Because the `'result'` column already uses 0s to record losses and 1s to record 
 After fitting the model and seeing how well it performed on testing data, our model recieved an accuracy of 0.9646 and a F1 score of 0.9656. For losses, the F1 score was 0.96, and for wins, the F1 score was 0.97. These scores, all of which were very high and around the 0.96-0.97 range, indicate that not only was the model able to accurately classify nearly all of the data, but that it was also extremely fair, consistently and correctly classifying both losses and wins equally, which means that it would be fair to call this model very good. However, the model still has some improvement space that could make it even better than it is now.
 
 ## Final Model 
-In my final model, we continued using the features used in the baseline model (`'void_grubs'`, `'dragons'`, `'barons'`, and `'inhibitors'`). However, 2 more features were engineered from smaller_df's base features and also incorporated into the model: `'kill_death_ratio'`, which was created by dividing `'teamkills'` by `'teamdeaths'` for games where `'teamdeaths'` is greater than 0 (to avoid divide by 0 errors), and `'structures_taken'`, which was created by adding  `'towers'` and `'inhibitors'`. Both of those features are quatitative.
+In my final model, we continued using the features used in the baseline model (`'void_grubs'`, `'dragons'`, `'barons'`, and `'inhibitors'`). However, 2 more features were engineered from smaller_df's base features and also incorporated into the model: `'kill_death_ratio'`, which was created by dividing `'teamkills'` by `'teamdeaths'` for games where `'teamdeaths'` is greater than 0 (to avoid divide by 0 errors), and `'structures_taken'`, which was created by adding  `'towers'` and `'inhibitors'`. Both of those features are quatitative. 
+
+I've already discussed why I decided to use `'void_grubs'`, `'dragons'`, `'barons'`, and `'inhibitors'` as features in the Baseline Model section, and my reasoning was validated by the high accuracy and F1 scores of the baseline model. As such, I will use them in the final model as well.
 
 `'kill_death_ratio'`:
 

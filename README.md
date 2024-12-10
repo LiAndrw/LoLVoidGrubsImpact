@@ -7,7 +7,7 @@ Author: Andrew Li
 ### General Introduction
 League of Legends (LoL) is a multiplayer online battle arena (MOBA) game created and developed by Riot Games, where two teams of five players fight each other on a massive battlefield called Summoner’s Rift and try to destroy opposite side’s enemy base (AKA the Nexus) using various champions. Released in 2009, it has since become one of the most successful and influential online competitive games of all time, having tens of millions of monthly players and boasting an incredible and thriving competitive scene. 
 
-In LoL, there are “epic” monsters, which are neutral monsters located between the friendly and enemy jungles and which provide powerful buffs to whichever team kills them. In 2024, Riot introduced a new epic monster: the **void grubs**. These spawned, and could only be killed (AKA secured or obtained), during the early stages of games, and up to a total of 6 can be killed in a game. When killed, they give gold and experience, and more importantly, allow the team that killed them to deal extra damage over time (DOT) to enemy structures. Killing more than four void grubs also spawns voidmites whenever friendly teammates hit enemy structures, and these voidmites also deal damage to structures. The Nexus, along with the turrets and inhibitors that defend them, are all structures, and thus void grubs became an important objective to secure for teams.
+In LoL, there are “epic” monsters, which are neutral monsters located between the friendly and enemy jungles and which provide powerful buffs to whichever team kills them. In 2024, Riot introduced a new epic monster: the **void grubs**. These spawned, and could only be killed (AKA secured or obtained), during the early stages of games, and up to a total of 6 can be killed in a game. When killed, they give gold and experience to the player(s) that secured them, and more importantly, allow the team that killed them to deal extra damage over time (DOT) to enemy structures. Killing more than four void grubs also spawns voidmites whenever friendly teammates hit enemy structures, and these voidmites also deal damage to structures. The Nexus, along with the turrets and inhibitors that defend them, are all structures, and thus void grubs became an important objective to secure for teams.
 
 ### Central Question
 The central question this project is interested in answering is the following: **How does securing the void grubs affect the game course and statistics of the team that secures them?** This project will use data analysis techniques to quantify and discover the relationship that securing void grubs has with various features, such as structures destroyed, gold differentials, kill differences and game outcomes. We will then use these statistics to create a prediction model that will predict the outcome of a game given said statistics. This model could be used to better understand win conditions in League games, helping teams to devise strategies to play at a higher level.
@@ -42,13 +42,13 @@ The data set we end up with contains 18798 rows and 13 columns, 9 of which hold 
 
 Below is the head of the smaller_df dataframe:
 
-| gameid           | side  | league  |   result |   teamkills |   teamdeaths |   dragons |   barons |   void_grubs |   towers | inhibitors   |   visionscore | totalgold   |
-|:-----------------|:------|:--------|---------:|------------:|-------------:|----------:|---------:|-------------:|---------:|:-------------|--------------:|:------------|
-| LOLTMNT99_132542 | Blue  | TSC     |        1 |          20 |            7 |       2.0 |      1.0 |          0.0 |      9.0 | 1.0          |           186 | 52523       |
-| LOLTMNT99_132542 | Red   | TSC     |        0 |           7 |           20 |       1.0 |      0.0 |          6.0 |      1.0 | 0.0          |           141 | 39782       |
-| LOLTMNT99_132665 | Blue  | TSC     |        1 |          31 |           20 |       2.0 |      1.0 |          4.0 |      8.0 | 1.0          |           251 | 72355       |
-| LOLTMNT99_132665 | Red   | TSC     |        0 |          20 |           31 |       3.0 |      1.0 |          2.0 |      8.0 | 1.0          |           251 | 66965       |
-| LOLTMNT99_132755 | Blue  | TSC     |        1 |          24 |            8 |       2.0 |      1.0 |          2.0 |      9.0 | 1.0          |           261 | 68226       |
+| gameid           | league   | side   |   result |   teamkills |   teamdeaths |   dragons |   barons |   void_grubs |   towers |   inhibitors |   visionscore |   totalgold |
+|:-----------------|:---------|:-------|---------:|------------:|-------------:|----------:|---------:|-------------:|---------:|-------------:|--------------:|------------:|
+| LOLTMNT99_132542 | TSC      | Blue   |        1 |          20 |            7 |         2 |        1 |            0 |        9 |            1 |           186 |       52523 |
+| LOLTMNT99_132542 | TSC      | Red    |        0 |           7 |           20 |         1 |        0 |            6 |        1 |            0 |           141 |       39782 |
+| LOLTMNT99_132665 | TSC      | Blue   |        1 |          31 |           20 |         2 |        1 |            4 |        8 |            1 |           251 |       72355 |
+| LOLTMNT99_132665 | TSC      | Red    |        0 |          20 |           31 |         3 |        1 |            2 |        8 |            1 |           251 |       66965 |
+| LOLTMNT99_132755 | TSC      | Blue   |        1 |          24 |            8 |         2 |        1 |            2 |        9 |            1 |           261 |       68226 |
 
 **NOTE** that this cleaned dataframe will need to be further adjusted and modified for other specific parts of the project.
 
@@ -99,14 +99,17 @@ Two more columns were added to the new dataframe: `'winrate'`, which was created
 
 This is what the grouped pivot table looks like:
 
-<iframe
-  src="assets/groupedaggs.html"
-  width="800"
-  height="250"
-  frameborder="0"
-></iframe>
+|   void_grubs |   result_sum |   count |   avg_totalgold |   avg_towers |   avg_visionscore |   winrate |   percent of games |
+|-------------:|-------------:|--------:|----------------:|-------------:|------------------:|----------:|-------------------:|
+|            0 |         1530 |    3757 |         56493.1 |      5.13734 |           244.966 |  0.40724  |          0.234052  |
+|            1 |          723 |    1642 |         57588.2 |      5.47686 |           250.449 |  0.440317 |          0.102293  |
+|            2 |          771 |    1656 |         58530   |      5.84662 |           259.394 |  0.46558  |          0.103165  |
+|            3 |         1858 |    3717 |         59383.7 |      6.21308 |           257.913 |  0.499865 |          0.23156   |
+|            4 |          679 |    1258 |         59125.9 |      6.51192 |           259.874 |  0.539746 |          0.0783703 |
+|            5 |          711 |    1209 |         59608   |      7.03805 |           255.983 |  0.588089 |          0.0753177 |
+|            6 |         1753 |    2813 |         59235.6 |      7.36687 |           251.125 |  0.623178 |          0.175243  |
 
-What's interesting to see is that not only does winrate increase with number of void grubs taken by teams, but the number of towers taken also noticeably increases with the number of void grubs taken by teams. Even more interesting is that taking void grubs doesn't seem to have much of a noticeable impact on total gold earned after 3 void grubs, and it seems to have almost no impact on average vision score. While the data still heavily implies that taking void grubs significantly impacts the flow of the game and allows teams to get more towers and win games more often, it also shows that taking void grubs may not necessarily affect other features as much.
+What's interesting to see is that not only does winrate increase with number of void grubs taken by teams, but the number of towers taken also noticeably increases with the number of void grubs taken by teams. Even more interesting is that taking void grubs doesn't seem to have much of a noticeable impact on total gold earned after 3 void grubs, and it seems to have almost no impact on average vision score. While the data still heavily implies that taking void grubs significantly impacts the flow of the game and allows teams to get more towers and win games more often, it also shows that taking void grubs may not necessarily affect other features as much. Another possibility as that taking void grubs may still increase the vision score and gold a team earns per minute, but this causes teams to win faster and thus reduces the avg_visionscore and avg_totalgold of teams in those games.
 
 ## Assessment of Missingness
 ### NMAR Analysis
@@ -114,7 +117,7 @@ I believe that the the missingness of values in the `'ban1'`, `'ban2'`, `'ban3'`
 
 I believe that the main reason for missing bans is that, sometimes, players don't have a specific champion to ban for certain reasons (team doesn't agree with what champion to ban, player forgets they are the one picking the banned champion until it's too late, internal drama on the team makes one player want to sabotage the team, etc.), and so they choose to not ban anything instead of banning a random champion. Ultimately, champion bans are decided by the player, and because these missing values appear when players make the conscious choice to not ban any champion, the missingness of these values depends on the values themselves, making the missingness NMAR.
 
-One way to make the bans columns missing at random (MAR) would be adding a hypothetical column (let's call it `'5_bans'`) to the dataset that tracks if all 5 players on a team decided to ban a champion, returning 1 if they did and 0 if one or more players on a team did not choose a ban. 
+One way to make the bans columns missing at random (MAR) would be by adding a hypothetical column (let's call it `'5_bans'`) to the dataset that tracks if all 5 players on a team decided to ban a champion, returning 1 if they did and 0 if one or more players on a team did not choose a ban. 
 
 
 ### Missingness Dependency
@@ -128,14 +131,59 @@ The first permutation test was performed on `'void_grubs'` and `'league'`.
 
 **Test Statistic**  The difference in league distributions between `'void_grubs'` missing (NA) and not missing (non-NA).
 
-Below is the observed distribution of `'league'` in relation to when `'void_grubs'` is missing and not missing.
+Below is the observed distribution of `'league'` in relation to when `'void_grubs'` is missing and not missing:
 
-<iframe
-  src="assets/leaguevgmissing.html"
-  width="800"
-  height="1300"
-  frameborder="0"
-></iframe>
+| league          |   grubs_missing = False |   grubs_missing = True |
+|:----------------|-----------------------:|------------------------:|
+| AC              |              0.0043608 |               0         |
+| AL              |              0.0175679 |               0         |
+| CBLOL           |              0.0327685 |               0         |
+| CBLOLA          |              0.0343882 |               0         |
+| CDF             |              0.0085971 |               0         |
+| CT              |              0.0048592 |               0         |
+| EBL             |              0.0176925 |               0         |
+| EBLPA           |              0.0031149 |               0         |
+| EM              |              0.0497134 |               0         |
+| EPL             |              0.0186893 |               0         |
+| ESLOL           |              0.0345128 |               0         |
+| EWC             |              0.0023673 |               0         |
+| GLL             |              0.0174433 |               0         |
+| GLLPA           |              0.0047346 |               0         |
+| HC              |              0.0138301 |               0         |
+| HM              |              0.0174433 |               0         |
+| HW              |              0.010466  |               0         |
+| IC              |              0.0079741 |               0         |
+| LAS             |              0.0345128 |               0         |
+| LCK             |              0.0600548 |               0         |
+| LCKC            |              0.0636681 |               0         |
+| LCO             |              0.0194368 |               0         |
+| LCS             |              0.0239223 |               0         |
+| LDL             |              0         |               0.411508  |
+| LEC             |              0.0366309 |               0         |
+| LFL             |              0.0281585 |               0         |
+| LFL2            |              0.0200598 |               0         |
+| LIT             |              0.0170695 |               0         |
+| LJL             |              0.0184401 |               0         |
+| LLA             |              0.0265387 |               0         |
+| LPL             |              0         |               0.522214  |
+| LPLOL           |              0.0176925 |               0         |
+| LRN             |              0.0108398 |               0         |
+| LRS             |              0.0123349 |               0         |
+| LVP SL          |              0.0287815 |               0         |
+| MSI             |              0         |               0.0568099 |
+| NACL            |              0.0575629 |               0         |
+| NEXO            |              0.0124595 |               0         |
+| NLC             |              0.0176925 |               0         |
+| NLC Aurora Open |              0.0095938 |               0         |
+| PCS             |              0.0368801 |               0         |
+| PRM             |              0.0285323 |               0         |
+| PRMP            |              0.0166957 |               0         |
+| TCL             |              0.020309  |               0         |
+| TSC             |              0.0129579 |               0         |
+| UL              |              0.0176925 |               0         |
+| USP             |              0.0047346 |               0         |
+| VCS             |              0.031398  |               0         |
+| WLDs            |              0.0148268 |               0.0094683 |
 
 After performing permutation testing, the **observed TVD** was found to be 0.9905316824471959, and the **p-value** was found to be 0. The plot below shows the empirical distribution of the TVD's, along with the observed TVD. 
 
@@ -156,15 +204,12 @@ The second permutation test was performed on `'void_grubs'` and `'side'`.
 
 **Test Statistic**  The difference in league distributions between `'void_grubs'` missing (NA) and not missing (non-NA).
 
-Below is the observed distribution of `'side'` in relation to when `'void_grubs'` is missing and not missing.
+Below is the observed distribution of `'side'` in relation to when `'void_grubs'` is missing and not missing:
 
-
-<iframe
-  src="assets/sidevgmissing.html"
-  width="800"
-  height="150"
-  frameborder="0"
-></iframe>
+| side   |   grubs_missing = False |   grubs_missing = True |
+|:-------|------------------------:|-----------------------:|
+| Blue   |                     0.5 |                    0.5 |
+| Red    |                     0.5 |                    0.5 |
 
 After performing permutation testing, the **observed TVD** was found to be 0, and the **p-value** was found to be 1. The plot below shows the empirical distribution of the TVD's, along with the observed TVD. 
 

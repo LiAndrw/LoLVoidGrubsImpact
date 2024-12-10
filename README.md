@@ -59,7 +59,7 @@ In this exploratory data analysis, univariate analysis was performed to examine 
 <iframe
   src="assets/golddist.html"
   width="800"
-  height="450"
+  height="350"
   frameborder="0"
 ></iframe>. 
 
@@ -209,7 +209,7 @@ Below is a histogram showing the distribution of the test statistics calculated 
   frameborder="0"
 ></iframe>
 
-The results are statistically significant, as the p-value I got (0) was less than the significance level (0.05), so we reject the null hypothesis. We will instead accept the alternative hypothesis, which is that, on average, teams that secure a large number of void grubs in games earn more kills in those games than teams that secure a small number of void grubs. This trend may be because of the earlier explanation I gave of how taking more void grubs seems to lead to taking more towers, which leads to more resources and opportunities for a team to utilize which may allow them to earn more kills in a game.
+The results are statistically significant, as the p-value I got (0) was less than the significance level (0.05), so we reject the null hypothesis. We will instead accept the alternative hypothesis, which is that, on average, teams that secure a large number of void grubs in games earn more kills in those games than teams that secure a small number of void grubs. This trend may be because of the earlier explanation I gave of how taking more void grubs seems to lead to taking more towers, which leads to more resources and opportunities for a team to utilize which may allow them to earn more kills in a game. However, this is only speculation.
 
 ## Framing a Prediction Problem
 I plan on building a model that will predict whether or not a team won a game based off only knowing certain game statistics of that team in that game. This will be a **binary classification** model, since we only have to predict 1 of 2 possible outcomes (win or loss). The response variable will be `'result'`, as that tracks whether or not a team won or lost their game, which is exactly what I am trying to predict with my model. 
@@ -228,12 +228,14 @@ Because the `'result'` column already uses 0s to record losses and 1s to record 
 After fitting the model and seeing how well it performed on testing data, our model recieved an accuracy of 0.9646 and a F1 score of 0.9656. For losses, the F1 score was 0.96, and for wins, the F1 score was 0.97. These scores, all of which were very high and around the 0.96-0.97 range, indicate that not only was the model able to accurately classify nearly all of the data, but that it was also extremely fair, consistently and correctly classifying both losses and wins equally, which means that it would be fair to call this model very good. However, the model still has some improvement space that could make it even better than it is now.
 
 ## Final Model 
-In my final model, 2 more features were engineered from smaller_df's base features and incorporated into the model: `'kill_death_ratio'`, which was created by dividing `'teamkills'` by `'teamdeaths'` for games where `'teamdeaths'` is greater than 0 (to avoid divide by 0 errors), and `'structures_taken'`, which was created by adding  `'towers'` and `'inhibitors'`. Both features are quatitative.
+In my final model, we continued using the features used in the baseline model (`'void_grubs'`, `'dragons'`, `'barons'`, and `'inhibitors'`). However, 2 more features were engineered from smaller_df's base features and also incorporated into the model: `'kill_death_ratio'`, which was created by dividing `'teamkills'` by `'teamdeaths'` for games where `'teamdeaths'` is greater than 0 (to avoid divide by 0 errors), and `'structures_taken'`, which was created by adding  `'towers'` and `'inhibitors'`. Both of those features are quatitative.
 
 `'kill_death_ratio'`:
+
 In League, getting `'teamkills'` (killing enemy players, aka champions) is extremely important, as not only do players get immediate resources such as gold and experience from killing enemy champions, but because champions only resurrect (respawn) after a certain amount of time past their death, players can use this time to gain leads and take control of Summoners' Rift without enemy opposition. In contrast, teams want to avoid getting `'teamdeaths'` (friendly champion deaths to enemy champions), in order to avoid giving extra gold, exp, and map control to the enemy team and players. Because of how important getting `'teamkills'` and avoiding `'teamdeaths'` is in LoL, I believed that a metric that tracks the ratio of `'teamkills'` to `'teamdeaths'` would greatly contribute to improving the prediction power of the model. Teams with a high `'kill_death_ratio'` in games would correlate more with wins in those games, and teams with low `'kill_death_ratio'` in games would correlate more with losses in those games.  
 
-`'structures_taken'`
+`'structures_taken'`:
+
 I already mentioned how important taking `'inhibitors'` are in League and how that feature would be good for use in prediction. However, taking `'towers'` (turrets) is also extremely important. `'towers'` shoot powerful projectiles at enemy players and minions, protecting each side's lanes and base. Destroying `'towers'` gives gold and extra control of the map to players and teams, and at least 5 enemy `'towers'` (all 3 defending one of the lanes, along with the 2 defending the Nexus) must be destroyed for a team to destroy the enemy Nexus and win that game. Because `'inhibitors'` and `'towers'` are both structures (in fact, besides the Nexuses, they are the only structures in LoL that can be destroyed), and taking both of them are extremely important for winning a game, I believed that a metric that tracks how many of them a team takes in a game would serve as a great feature to add to the model. Teams with higher `'structures_taken'` values would correlate more with wins in those games, and teams with lower `'structures_taken'` values would correlate more with losses in those games.
 
 I chose to continue using a random forest classifier, as the many factors that determine a team's chances of winning or losing a given game often clash with one another, and so using a random forest classifier was seen as the optimal solution. Using GridSearchCV, I found some of the best hyperparameters for the RandomForestClassifier:
@@ -246,7 +248,27 @@ I chose to continue using a random forest classifier, as the many factors that d
 After fitting the final model and seeing how well it performed on testing data, our final model recieved an accuracy of 0.98430851 and a F1 score of 0.98438740. For losses, the F1 score was 0.98, and for wins, the F1 score was 0.98. Despite the base model already having high accuracy and F1 scores, the final model was still able to improve on it noticeably, showing slight improvements to every single previous performance metric.
 
 ## Fairness Analysis
+This fairness analysis will first split the data into 2 groups: **high `'totalgold'`** and **low `'totalgold'`**. Games where the team being analyzed obtained `'totalgold'` values <= 58079 were classified as low `'totalgold'` games, and games where the team being analyzed obtained `'totalgold'` values > 58079 were classified as high `'totalgold'` games. I chose **58079** as the threshold value due to that being the median value of `'totalgold'`.
 
+I chose **F1 score differences** as the evaluation metric, subtracting the F1 score for low `'totalgold'` predictions from those of high `'totalgold'` predictions. This is because want to see if the model evaluates low `'totalgold'` and high `'totalgold'` games equally.
 
+The following statements are the null and alternative hypotheses, test statistic, and significance level:
 
+**Null Hypothesis**: The model is fair. Its F1 scores for lower and higher `'totalgold'` games are roughly the same.
 
+**Alternative Hypothesis**: The model is unfair. Its F1 score for higher `'totalgold'` games are lower than those for lower `'totalgold'` games.
+
+**Test Statistic**: Difference in F1 score between games where a team earned a low `'totalgold'` value and games where a team earned a high `'totalgold'` value.
+
+**Significance-Value**: 0.05.
+
+Below is a graph showing the distribution of the test statistics:
+
+<iframe
+  src="assets/modelfairness.html"
+  width="800"
+  height="250"
+  frameborder="0"
+></iframe>
+
+The observed difference in F1 scores was found to be -0.0162. The permutation test was done with 1000 trials. I got a p-value of 0, which was below the significance level of 0.05, so we reject the null hypothesis. The model does worse at classifying games where teams have high `'totalgold'` values compared to games where teams have low `'totalgold'` values.

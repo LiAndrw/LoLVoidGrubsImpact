@@ -22,13 +22,13 @@ The original dataframe is comprised of 116016 rows and 161 columns. Each row rep
 |`'league'`                |The league the individual game was played in|
 |`'side'`                |The side of the map the participant played on (Red or Blue side)|
 |`'result'`                |The result the participant recieved during the game (1 for a win, 0 for a loss)|
-|`'teamkills'`                |The number of enemy player (champion) takedowns a participant obtained during a game|
-|`'teamdeaths'`                |The number of friendly player (champion) deaths a participant obtained during a game|
-|`'dragons'`                |The number of elemental drakes and Elder Dragons a participant secured during a game|
-|`'barons'`                |The number of Baron Nashor's a participant secured during a game|
-|`'void_grubs'`                |The number of void grubs a participant secured during a game|
-|`'towers'`                |The number of enemy towers (turrets) a participant destroyed during a game|
-|`'inhibitors'`                |The number of enemy inhibitors a participant destroyed during a game|
+|`'teamkills'`                |The number of enemy player (champion) takedowns a team obtained during a game|
+|`'teamdeaths'`                |The number of friendly player (champion) deaths a team obtained during a game|
+|`'dragons'`                |The number of elemental drakes and Elder Dragons a team secured during a game|
+|`'barons'`                |The number of Baron Nashor's a team secured during a game|
+|`'void_grubs'`                |The number of void grubs a team secured during a game|
+|`'towers'`                |The number of enemy towers (turrets) a team destroyed during a game|
+|`'inhibitors'`                |The number of enemy inhibitors a team destroyed during a game|
 |`'visionscore'`                |The total vision score (a value that reflects the amount of vision controlled) a participant earned during a game.|
 |`'totalgold'`                |The total amount of gold (used to buy items that increase a player's power) earned by a participant during a game|
 
@@ -89,11 +89,17 @@ Bivariate analysis was performed to find the correlation between `'void_grubs'` 
 The bar graph shows a distinct positive correlation between void grubs taken and win rate. The win rate of teams increases with the number of void grubs taken they take, indicating that taking more void grubs may possibly increase a team's chances of winning the game. 
 
 ### Interesting Aggregates
-A second dataframe, which was named grouped, was also made to find interesting aggregates. This dataset was created from smaller_df by first grouping on `'void_grubs'` and creating several new columns: `'result_sum'`, the total number of wins teams earned after getting a specific number of void grubs, `'count'`, the count of games where the specific number of void grubs was obtained by a team, `'avg_towers'`, the average number of towers taken in a game by teams that had secured a specific number of void grubs, `'avg_totalgold'`, the average amount of total gold earned by teams that had secured a specific number of void grubs, and `'avg_visionscore'`, the average amount of vision score earned by teams that had secured a specific number of void grubs.
+A second dataframe, which was named grouped, was also made to find interesting aggregates. This dataset was created from smaller_df by first grouping on `'void_grubs'` and creating several new columns:
+
+* `'result_sum'`, the total number of wins teams earned after getting a specific number of void grubs 
+* `'count'`, the count of games where the specific number of void grubs was obtained by a team
+* `'avg_towers'`, the average number of towers taken in a game by teams that had secured a specific number of void grubs 
+* `'avg_totalgold'`, the average amount of total gold earned by teams that had secured a specific number of void grubs
+* `'avg_visionscore'`, the average amount of vision score earned by teams that had secured a specific number of void grubs
 
 `'result_sum'` was calculated by applying a sum aggregation function on `'result'` from smaller_df.
 `'count'` was calculated by applying a size aggregation function on `'void_grubs'` from smaller_df.
-`'avg_towers'`, `'avg_totalgold'`, and `'avg_visionscore'` was calculated by applying a mean aggregation function on `'towers'`, `'totalgold'`, and `'visionscore'` respectively, from smaller_df.
+`'avg_towers'`, `'avg_totalgold'`, and `'avg_visionscore'` were calculated by applying a mean aggregation function on `'towers'`, `'totalgold'`, and `'visionscore'`, respectively, from smaller_df.
 
 Two more columns were added to the new dataframe: `'winrate'`, which was created by dividing the `'result_sum'` column by the `'count'` column and which shows the ratio of games won to total games played for each number of void grubs secured, and `'percent of games'`, which was created by dividing the `'count'` column by its sum and which shows the proportion of games each `'void_grubs'` value represents out of the total number of games.
 
@@ -115,10 +121,9 @@ What's interesting to see is that not only does winrate increase with number of 
 ### NMAR Analysis
 I believe that the the missingness of values in the `'ban1'`, `'ban2'`, `'ban3'`, `'ban4'` and `'ban5'` columns are not missing at random (NMAR). The ban columns record the champions banned by a team during the draft for a game. In League, certain champions are better against, or "counter", other champions. Some champions also synergize extremely well with each other. Certain players are also extremely good at specific champions. Banned champions are not allowed to be played by either side for that game, and so teams use bans in order to kneecap or weaken the enemy draft. As such, banning champions is a essential part of LoL esports.
 
-I believe that the main reason for missing bans is that, sometimes, players don't have a specific champion to ban for certain reasons (team doesn't agree with what champion to ban, player forgets they are the one picking the banned champion until it's too late, internal drama on the team makes one player want to sabotage the team, etc.), and so they choose to not ban anything instead of banning a random champion. Ultimately, champion bans are decided by the player, and because these missing values appear when players make the conscious choice to not ban any champion, the missingness of these values depends on the values themselves, making the missingness NMAR.
+I believe that the main reason for missing bans is that, sometimes, players don't have a specific champion to ban for certain reasons (team doesn't agree with what champion to ban, player forgets they are the one picking the banned champion until it's too late, internal drama on the team makes one player want to sabotage the team, etc.), and so they choose to not ban anything instead of banning a random champion. Ultimately, champion bans are decided by the player, and because these missing values appear when players make the conscious choice to not ban any champion, the missingness of these values depends on the values **themselves**, making the missingness NMAR.
 
 One way to make the bans columns missing at random (MAR) would be by adding a hypothetical column (let's call it `'5_bans'`) to the dataset that tracks if all 5 players on a team decided to ban a champion, returning 1 if they did and 0 if one or more players on a team did not choose a ban. 
-
 
 ### Missingness Dependency
 This section investigates the missingness of `'void_grubs'` in relation to other columns, specifically to see if its missingness depends on them. The first column I used was `'league'`. The second column I used was `'side'`. The significance level used for both permutation tests was 0.05. Both tests used total variation distance (TVD) as the test statistic. Both tests used 1000 shuffles to collect 1000 samples. 

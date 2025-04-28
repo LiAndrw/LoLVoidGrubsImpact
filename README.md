@@ -1,5 +1,5 @@
 # League of Legends Esports Void Grubs Impact Analysis
-A project studying the impact of securing void grubs in League of Legends Esports games, conducted at UC San Diego.
+A project studying the impact of securing void grubs in League of Legends Esports games during 2024.
 
 Author: Andrew Li
 
